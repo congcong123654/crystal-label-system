@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水晶标价格计算器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3498db, #8e44ad);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .tab-container {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            font-size: 16px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .radio-option {
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .radio-option.selected {
+            background: #e3f2fd;
+            border-color: #3498db;
+            color: #3498db;
+            font-weight: 500;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-field {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .add-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .add-btn:hover {
+            background: #2980b9;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #3498db, #8e44ad);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .result-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .total-price {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .result-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: space-between;
+        }
+        
+        .result-item {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .result-item .label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .result-item .value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .product-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .spacing-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .spacing-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .spacing-option.selected {
+            background: #e3f2fd;
+            border-color: #3498db;
+            color: #3498db;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>水晶标价格计算器</h1>
+            <p>快速计算您的定制水晶标价格</p>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab active" data-tab="single">单品计算</div>
+            <div class="tab" data-tab="multi">多品计算</div>
+        </div>
+        
+        <!-- 单品页面 -->
+        <div id="single-page" class="form-container">
+            <div class="form-group">
+                <label>工艺类型</label>
+                <div class="radio-group">
+                    <div class="radio-option selected" data-type="normal">普通标</div>
+                    <div class="radio-option" data-type="gold">烫金</div>
+                    <div class="radio-option" data-type="matte">哑光标</div>
+                    <div class="radio-option" data-type="all">全能标</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>尺寸（厘米）</label>
+                <div class="input-group">
+                    <input type="number" class="input-field" id="single-length" placeholder="长度" min="0" step="0.1">
+                    <input type="number" class="input-field" id="single-width" placeholder="宽度" min="0" step="0.1">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>数量</label>
+                <input type="number" class="input-field" id="single-quantity" placeholder="数量" min="1">
+            </div>
+            
+            <div class="form-group">
+                <label>裁切间距</label>
+                <div class="spacing-group">
+                    <div class="spacing-option selected" data-spacing="1">1cm</div>
+                    <div class="spacing-option" data-spacing="0.8">0.8cm</div>
+                    <div class="spacing-option" data-spacing="0.6">0.6cm</div>
+                    <div class="spacing-option" data-spacing="0">0cm</div>
+                </div>
+            </div>
+            
+            <button class="calculate-btn" id="calculate-single">计算价格</button>
+        </div>
+        
+        <!-- 多品页面 -->
+        <div id="multi-page" class="form-container" style="display: none;">
+            <div class="form-group">
+                <label>工艺类型</label>
+                <div class="radio-group">
+                    <div class="radio-option selected" data-type="normal">普通标</div>
+                    <div class="radio-option" data-type="gold">烫金</div>
+                    <div class="radio-option" data-type="matte">哑光标</div>
+                    <div class="radio-option" data-type="all">全能标</div>
+                </div>
+            </div>
+            
+            <div id="multi-products">
+                <div class="product-item">
+                    <div class="form-group">
+                        <label>尺寸（厘米）</label>
+                        <div class="input-group">
+                            <input type="number" class="input-field" placeholder="长度" min="0" step="0.1">
+                            <input type="number" class="input-field" placeholder="宽度" min="0" step="0.1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>数量</label>
+                        <input type="number" class="input-field" placeholder="数量" min="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>裁切间距</label>
+                        <div class="spacing-group">
+                            <div class="spacing-option selected" data-spacing="1">1cm</div>
+                            <div class="spacing-option" data-spacing="0.8">0.8cm</div>
+                            <div class="spacing-option" data-spacing="0.6">0.6cm</div>
+                            <div class="spacing-option" data-spacing="0">0cm</div>
+                        </div>
+                    </div>
+                    
+                    <button class="remove-btn">×</button>
+                </div>
+            </div>
+            
+            <button class="add-btn" id="add-product">+ 添加产品</button>
+            <button class="calculate-btn" id="calculate-multi">计算价格</button>
+        </div>
+        
+        <!-- 结果显示区域 -->
+        <div id="result-container" class="result-container">
+            <div class="total-price" id="total-price">¥0.00</div>
+            <div class="result-details">
+                <div class="result-item">
+                    <div class="label">单价</div>
+                    <div class="value" id="unit-price">¥0.00/个</div>
+                </div>
+                <div class="result-item">
+                    <div class="label">总面积</div>
+                    <div class="value" id="total-area">0.00 ㎡</div>
+                </div>
+                <div class="result-item">
+                    <div class="label">预估重量</div>
+                    <div class="value" id="estimated-weight">0.00 KG</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面切换逻辑
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const tabType = this.getAttribute('data-tab');
+                document.getElementById('single-page').style.display = tabType === 'single' ? 'block' : 'none';
+                document.getElementById('multi-page').style.display = tabType === 'multi' ? 'block' : 'none';
+                
+                if (tabType === 'multi') {
+                    document.getElementById('unit-price').parentElement.style.display = 'none';
+                } else {
+                    document.getElementById('unit-price').parentElement.style.display = 'block';
+                }
+            });
+        });
+        
+        // 工艺类型选择逻辑
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const parent = this.parentElement;
+                parent.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        // 裁切间距选择逻辑
+        document.querySelectorAll('.spacing-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const parent = this.parentElement;
+                parent.querySelectorAll('.spacing-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        // 添加产品逻辑
+        document.getElementById('add-product').addEventListener('click', function() {
+            const productsContainer = document.getElementById('multi-products');
+            const newProduct = document.createElement('div');
+            newProduct.className = 'product-item';
+            newProduct.innerHTML = `
+                <div class="form-group">
+                    <label>尺寸（厘米）</label>
+                    <div class="input-group">
+                        <input type="number" class="input-field" placeholder="长度" min="0" step="0.1">
+                        <input type="number" class="input-field" placeholder="宽度" min="0" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>数量</label>
+                    <input type="number" class="input-field" placeholder="数量" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label>裁切间距</label>
+                    <div class="spacing-group">
+                        <div class="spacing-option selected" data-spacing="1">1cm</div>
+                        <div class="spacing-option" data-spacing="0.8">0.8cm</div>
+                        <div class="spacing-option" data-spacing="0.6">0.6cm</div>
+                        <div class="spacing-option" data-spacing="0">0cm</div>
+                    </div>
+                </div>
+                
+                <button class="remove-btn">×</button>
+            `;
+            
+            productsContainer.appendChild(newProduct);
+            
+            // 为新添加的产品添加事件监听
+            newProduct.querySelectorAll('.spacing-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const parent = this.parentElement;
+                    parent.querySelectorAll('.spacing-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            newProduct.querySelector('.remove-btn').addEventListener('click', function() {
+                productsContainer.removeChild(newProduct);
+            });
+        });
+        
+        // 删除产品逻辑
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const productItem = this.parentElement;
+                document.getElementById('multi-products').removeChild(productItem);
+            });
+        });
+        
+        // 计算价格逻辑
+        document.getElementById('calculate-single').addEventListener('click', calculateSingle);
+        document.getElementById('calculate-multi').addEventListener('click', calculateMulti);
+        
+        function calculateSingle() {
+            // 获取输入值
+            const length = parseFloat(document.getElementById('single-length').value) || 0;
+            const width = parseFloat(document.getElementById('single-width').value) || 0;
+            const quantity = parseInt(document.getElementById('single-quantity').value) || 0;
+            
+            // 获取选中的工艺类型和裁切间距
+            const processType = document.querySelector('#single-page .radio-option.selected').getAttribute('data-type');
+            const spacing = parseFloat(document.querySelector('#single-page .spacing-option.selected').getAttribute('data-spacing'));
+            
+            if (length <= 0 || width <= 0 || quantity <= 0) {
+                alert('请填写完整的尺寸和数量信息');
+                return;
+            }
+            
+            // 计算面积
+            const area = calculateArea(length, width, quantity, spacing);
+            
+            // 计算价格
+            const priceData = calculatePrice(area, processType, quantity);
+            
+            // 显示结果
+            displayResult(priceData, area, true);
+        }
+        
+        function calculateMulti() {
+            const productItems = document.querySelectorAll('#multi-products .product-item');
+            let totalArea = 0;
+            let totalQuantity = 0;
+            
+            // 获取选中的工艺类型
+            const processType = document.querySelector('#multi-page .radio-option.selected').getAttribute('data-type');
+            
+            // 计算所有产品的总面积和总数量
+            productItems.forEach(item => {
+                const length = parseFloat(item.querySelector('input[placeholder="长度"]').value) || 0;
+                const width = parseFloat(item.querySelector('input[placeholder="宽度"]').value) || 0;
+                const quantity = parseInt(item.querySelector('input[placeholder="数量"]').value) || 0;
+                const spacing = parseFloat(item.querySelector('.spacing-option.selected').getAttribute('data-spacing'));
+                
+                if (length > 0 && width > 0 && quantity > 0) {
+                    totalArea += calculateArea(length, width, quantity, spacing);
+                    totalQuantity += quantity;
+                }
+            });
+            
+            if (totalArea <= 0) {
+                alert('请至少填写一个完整的产品信息');
+                return;
+            }
+            
+            // 计算价格
+            const priceData = calculatePrice(totalArea, processType, totalQuantity);
+            
+            // 显示结果
+            displayResult(priceData, totalArea, false);
+        }
+        
+        function calculateArea(length, width, quantity, spacing) {
+            // 根据间距计算面积（平方米）
+            if (spacing === 0) {
+                // 裁切尺寸
+                return (length * width * quantity) / 10000;
+            } else {
+                // 其他间距
+                return ((length + spacing) * (width + spacing) * quantity) / 10000;
+            }
+        }
+        
+        function calculatePrice(area, processType, quantity) {
+            let unitPrice = 0;
+            let totalPrice = 0;
+            
+            // 根据工艺类型和面积计算价格
+            switch (processType) {
+                case 'normal': // 普通标
+                    if (area < 1) {
+                        unitPrice = 80;
+                    } else if (area < 2) {
+                        unitPrice = 75;
+                    } else if (area < 5) {
+                        unitPrice = 70;
+                    } else if (area < 10) {
+                        unitPrice = 65;
+                    } else if (area < 20) {
+                        unitPrice = 60;
+                    } else if (area < 50) {
+                        unitPrice = 55;
+                    } else {
+                        unitPrice = 50;
+                    }
+                    
+                    totalPrice = area * unitPrice;
+                    if (totalPrice < 10) totalPrice = 10; // 起做价
+                    break;
+                    
+                case 'gold': // 烫金
+                    if (area < 0.24948) {
+                        totalPrice = 40;
+                    } else {
+                        totalPrice = 40 + (area - 0.24948) * 120;
+                    }
+                    unitPrice = totalPrice / quantity;
+                    break;
+                    
+                case 'matte': // 哑光标
+                case 'all': // 全能标
+                    // 先按普通标计算
+                    let normalPrice;
+                    if (area < 1) {
+                        normalPrice = area * 80;
+                    } else if (area < 2) {
+                        normalPrice = area * 75;
+                    } else if (area < 5) {
+                        normalPrice = area * 70;
+                    } else if (area < 10) {
+                        normalPrice = area * 65;
+                    } else if (area < 20) {
+                        normalPrice = area * 60;
+                    } else if (area < 50) {
+                        normalPrice = area * 55;
+                    } else {
+                        normalPrice = area * 50;
+                    }
+                    
+                    if (normalPrice < 10) normalPrice = 10; // 普通标起做价
+                    
+                    // 哑光标/全能标为普通标价格的1.5倍
+                    totalPrice = normalPrice * 1.5;
+                    if (totalPrice < 30) totalPrice = 30; // 起做价30元
+                    
+                    unitPrice = totalPrice / quantity;
+                    break;
+            }
+            
+            return {
+                unitPrice: unitPrice,
+                totalPrice: totalPrice
+            };
+        }
+        
+        function displayResult(priceData, area, showUnitPrice) {
+            document.getElementById('total-price').textContent = `¥${priceData.totalPrice.toFixed(2)}`;
+            
+            if (showUnitPrice) {
+                document.getElementById('unit-price').textContent = `¥${priceData.unitPrice.toFixed(2)}/个`;
+                document.getElementById('unit-price').parentElement.style.display = 'block';
+            } else {
+                document.getElementById('unit-price').parentElement.style.display = 'none';
+            }
+            
+            document.getElementById('total-area').textContent = `${area.toFixed(2)} ㎡`;
+            document.getElementById('estimated-weight').textContent = `${(area * 0.4).toFixed(2)} KG`;
+            
+            document.getElementById('result-container').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
